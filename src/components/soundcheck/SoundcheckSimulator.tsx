@@ -35,8 +35,13 @@ export function SoundcheckSimulator() {
     resetMeters,
   } = useSoundcheckStore();
 
-  const [draggingChannelId, setDraggingChannelId] = useState<number | null>(null);
-  const [hoveredCell, setHoveredCell] = useState<{ r: number; c: number } | null>(null);
+  const [draggingChannelId, setDraggingChannelId] = useState<number | null>(
+    null,
+  );
+  const [hoveredCell, setHoveredCell] = useState<{
+    r: number;
+    c: number;
+  } | null>(null);
   const [grabbedChannelId, setGrabbedChannelId] = useState<number | null>(null);
 
   const rowsCount = 4;
@@ -45,7 +50,9 @@ export function SoundcheckSimulator() {
   const audioCtxRef = useRef<AudioContext | null>(null);
   const seqTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const getIcon = (iconType: "mic" | "music" | "sliders" | "settings" | "radio") => {
+  const getIcon = (
+    iconType: "mic" | "music" | "sliders" | "settings" | "radio",
+  ) => {
     switch (iconType) {
       case "mic":
         return <Mic className="size-4" />;
@@ -88,7 +95,7 @@ export function SoundcheckSimulator() {
     ctx: AudioContext,
     frequency: number,
     volume: number,
-    type: OscillatorType
+    type: OscillatorType,
   ) => {
     if (isMuted || volume <= 0) return;
     try {
@@ -99,7 +106,10 @@ export function SoundcheckSimulator() {
       osc.frequency.setValueAtTime(frequency, ctx.currentTime);
 
       gain.gain.setValueAtTime(0, ctx.currentTime);
-      gain.gain.linearRampToValueAtTime((volume / 100) * 0.08, ctx.currentTime + 0.02);
+      gain.gain.linearRampToValueAtTime(
+        (volume / 100) * 0.08,
+        ctx.currentTime + 0.02,
+      );
       gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.35);
 
       osc.connect(gain);
@@ -122,14 +132,18 @@ export function SoundcheckSimulator() {
             nextMeters[ch.id] = 0;
           } else {
             const fluctuation = (Math.random() - 0.4) * 25;
-            nextMeters[ch.id] = Math.max(5, Math.min(100, baseVol + fluctuation));
+            nextMeters[ch.id] = Math.max(
+              5,
+              Math.min(100, baseVol + fluctuation),
+            );
           }
         });
         setMeters(nextMeters);
       }, 100);
 
       if (typeof window !== "undefined") {
-        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        const AudioCtx =
+          window.AudioContext || (window as any).webkitAudioContext;
         if (AudioCtx) {
           if (!audioCtxRef.current) {
             audioCtxRef.current = new AudioCtx();
@@ -209,10 +223,16 @@ export function SoundcheckSimulator() {
           </h3>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="text-neutral-400 border-neutral-800 font-mono text-[10px]">
+          <Badge
+            variant="outline"
+            className="text-neutral-400 border-neutral-800 font-mono text-[10px]"
+          >
             Latencia: 1.8ms
           </Badge>
-          <Badge variant="outline" className="text-violet-400 border-violet-900/50 bg-violet-950/20 font-mono text-[10px]">
+          <Badge
+            variant="outline"
+            className="text-violet-400 border-violet-900/50 bg-violet-950/20 font-mono text-[10px]"
+          >
             Global Store
           </Badge>
         </div>
@@ -220,7 +240,6 @@ export function SoundcheckSimulator() {
 
       {/* Cuerpo del Simulador */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-        
         {/* 1. Panel de Canales y Faders */}
         <div
           role="region"
@@ -268,8 +287,8 @@ export function SoundcheckSimulator() {
                   isDragging
                     ? "opacity-35 bg-neutral-950 border-dashed border-neutral-700"
                     : isActive
-                    ? "bg-violet-950/40 border-violet-600 text-white shadow-inner"
-                    : "bg-neutral-950/40 border-neutral-800/80 text-neutral-400 hover:border-neutral-700 hover:bg-neutral-900/50"
+                      ? "bg-violet-950/40 border-violet-600 text-white shadow-inner"
+                      : "bg-neutral-950/40 border-neutral-800/80 text-neutral-400 hover:border-neutral-700 hover:bg-neutral-900/50"
                 }`}
               >
                 {/* Drag Handle */}
@@ -295,7 +314,9 @@ export function SoundcheckSimulator() {
                     <div className="flex items-center gap-2">
                       <span
                         className={`p-1 rounded ${
-                          isActive ? "bg-violet-600 text-white" : "bg-neutral-800 text-neutral-400"
+                          isActive
+                            ? "bg-violet-600 text-white"
+                            : "bg-neutral-800 text-neutral-400"
                         }`}
                       >
                         {getIcon(ch.iconType)}
@@ -320,14 +341,19 @@ export function SoundcheckSimulator() {
                     }}
                   >
                     <div className="flex items-center gap-2">
-                      <Sliders className="size-3 text-neutral-600" aria-hidden="true" />
+                      <Sliders
+                        className="size-3 text-neutral-600"
+                        aria-hidden="true"
+                      />
                       <input
                         type="range"
                         min="0"
                         max="100"
                         value={volumes[ch.id]}
                         aria-label={`Volumen de ${ch.name}`}
-                        onChange={(e) => setVolume(ch.id, parseInt(e.target.value))}
+                        onChange={(e) =>
+                          setVolume(ch.id, parseInt(e.target.value))
+                        }
                         onMouseDown={(e) => e.stopPropagation()}
                         onTouchStart={(e) => e.stopPropagation()}
                         onDragStart={(e) => {
@@ -341,7 +367,10 @@ export function SoundcheckSimulator() {
                       </span>
                     </div>
 
-                    <div className="h-1.5 bg-neutral-800 rounded-full overflow-hidden w-full relative" aria-hidden="true">
+                    <div
+                      className="h-1.5 bg-neutral-800 rounded-full overflow-hidden w-full relative"
+                      aria-hidden="true"
+                    >
                       <div
                         className="h-full bg-gradient-to-r from-emerald-500 via-yellow-400 to-red-500 transition-all duration-75"
                         style={{ width: `${isPlaying ? level : 0}%` }}
@@ -370,18 +399,20 @@ export function SoundcheckSimulator() {
           </div>
 
           {/* Grilla Blueprint */}
-          <div className="relative flex-1 grid grid-rows-4 grid-cols-5 gap-1.5 py-1">
+          <div className="relative grid grid-rows-4 grid-cols-5 gap-1.5 py-1 h-[240px]">
             {Array.from({ length: rowsCount }).map((_, r) =>
               Array.from({ length: colsCount }).map((_, c) => {
                 const occupiedChannel = channels.find(
-                  (ch) => ch.gridPos?.r === r && ch.gridPos?.c === c
+                  (ch) => ch.gridPos?.r === r && ch.gridPos?.c === c,
                 );
                 const isTargetActive = activeChannelId === occupiedChannel?.id;
-                
+
                 const isDragActive = draggingChannelId !== null;
                 const isHovered = hoveredCell?.r === r && hoveredCell?.c === c;
 
-                const activeChName = channels.find(ch => ch.id === activeChannelId)?.name || "seleccionado";
+                const activeChName =
+                  channels.find((ch) => ch.id === activeChannelId)?.name ||
+                  "seleccionado";
                 const cellLabel = occupiedChannel
                   ? `Fila ${r + 1}, Columna ${c + 1}. Ocupado por ${occupiedChannel.name}.`
                   : `Fila ${r + 1}, Columna ${c + 1}. Vacía. Presiona Espacio o Enter para colocar ${activeChName} aquí.`;
@@ -416,13 +447,17 @@ export function SoundcheckSimulator() {
                           ? "bg-violet-600 border-violet-400 text-white shadow-lg shadow-violet-500/20 scale-105 z-10 cursor-grab active:cursor-grabbing"
                           : "bg-neutral-800 border-neutral-700 text-neutral-200 hover:border-neutral-500 cursor-grab active:cursor-grabbing"
                         : isHovered
-                        ? "bg-violet-600/30 border-violet-400 scale-105 z-10 border-solid shadow-lg shadow-violet-500/20"
-                        : isDragActive
-                        ? "bg-violet-950/15 border-dashed border-violet-500/40 hover:bg-violet-950/20"
-                        : "bg-neutral-950/20 border-neutral-900/50 hover:bg-neutral-900/40 hover:border-neutral-800"
+                          ? "bg-violet-600/30 border-violet-400 scale-105 z-10 border-solid shadow-lg shadow-violet-500/20"
+                          : isDragActive
+                            ? "bg-violet-950/15 border-dashed border-violet-500/40 hover:bg-violet-950/20"
+                            : "bg-neutral-950/20 border-neutral-900/50 hover:bg-neutral-900/40 hover:border-neutral-800"
                     }`}
                     draggable={occupiedChannel ? true : undefined}
-                    onDragStart={occupiedChannel ? () => handleDragStart(occupiedChannel.id) : undefined}
+                    onDragStart={
+                      occupiedChannel
+                        ? () => handleDragStart(occupiedChannel.id)
+                        : undefined
+                    }
                     onDragEnd={occupiedChannel ? handleDragEnd : undefined}
                   >
                     <AnimatePresence mode="popLayout">
@@ -432,31 +467,44 @@ export function SoundcheckSimulator() {
                           initial={{ scale: 0.7, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
                           exit={{ scale: 0.7, opacity: 0 }}
-                          transition={{ type: "spring", stiffness: 220, damping: 16 }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 220,
+                            damping: 16,
+                          }}
                           className="flex flex-col items-center justify-center w-full h-full p-1"
                         >
-                          <span className="p-0.5 shrink-0" aria-hidden="true">{getIcon(occupiedChannel.iconType)}</span>
+                          <span className="p-0.5 shrink-0" aria-hidden="true">
+                            {getIcon(occupiedChannel.iconType)}
+                          </span>
                           <span className="text-[10px] font-semibold tracking-tight text-center max-w-[65px] truncate leading-none mt-1 text-neutral-200">
                             {occupiedChannel.name.split(" ")[0]}
                           </span>
-                          {isPlaying && (meters[occupiedChannel.id] || 0) > 10 && (
-                            <span className="absolute -top-1 -right-1 flex h-2 w-2">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" aria-hidden="true"></span>
-                            </span>
-                          )}
+                          {isPlaying &&
+                            (meters[occupiedChannel.id] || 0) > 10 && (
+                              <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span
+                                  className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"
+                                  aria-hidden="true"
+                                ></span>
+                              </span>
+                            )}
                         </motion.div>
                       )}
                     </AnimatePresence>
 
                     {!occupiedChannel && isDragActive && !isHovered && (
-                      <span className="text-[8px] font-mono text-violet-500/40 font-bold select-none pointer-events-none" aria-hidden="true">
+                      <span
+                        className="text-[8px] font-mono text-violet-500/40 font-bold select-none pointer-events-none"
+                        aria-hidden="true"
+                      >
                         +
                       </span>
                     )}
                   </div>
                 );
-              })
+              }),
             )}
           </div>
 
@@ -477,12 +525,17 @@ export function SoundcheckSimulator() {
               return (
                 <div className="flex justify-between items-center flex-wrap gap-2">
                   <div>
-                    <span className="text-neutral-500 font-mono text-[10px]">PARCHE ACTIVO:</span>
+                    <span className="text-neutral-500 font-mono text-[10px]">
+                      PARCHE ACTIVO:
+                    </span>
                     <p className="font-semibold text-white tracking-wide mt-0.5">
                       {activeCh.patch}
                     </p>
                   </div>
-                  <Badge variant="violet" className="font-mono text-[9px] uppercase px-2 py-0.5">
+                  <Badge
+                    variant="violet"
+                    className="font-mono text-[9px] uppercase px-2 py-0.5"
+                  >
                     {activeCh.gridPos
                       ? `STAGE: Fila ${activeCh.gridPos.r + 1}, Col ${activeCh.gridPos.c + 1}`
                       : "Sin Ubicar"}
@@ -499,7 +552,11 @@ export function SoundcheckSimulator() {
         <div className="flex items-center gap-3">
           <Button
             onClick={() => setIsPlaying(!isPlaying)}
-            aria-label={isPlaying ? "Detener prueba de sonido" : "Iniciar prueba de sonido"}
+            aria-label={
+              isPlaying
+                ? "Detener prueba de sonido"
+                : "Iniciar prueba de sonido"
+            }
             className={`rounded-xl px-5 py-5 text-sm font-semibold transition-all duration-300 flex items-center gap-2 ${
               isPlaying
                 ? "bg-amber-500 hover:bg-amber-600 text-neutral-950 font-bold animate-pulse"
@@ -525,22 +582,35 @@ export function SoundcheckSimulator() {
             disabled={!isPlaying}
             aria-label={isMuted ? "Activar audio" : "Silenciar audio"}
             className={`border border-neutral-800 rounded-xl size-10 flex items-center justify-center p-0 cursor-pointer ${
-              isMuted ? "text-neutral-500 hover:text-neutral-400" : "text-emerald-400 hover:text-emerald-300 bg-emerald-950/20"
+              isMuted
+                ? "text-neutral-500 hover:text-neutral-400"
+                : "text-emerald-400 hover:text-emerald-300 bg-emerald-950/20"
             }`}
           >
-            {isMuted ? <VolumeX className="size-4" aria-hidden="true" /> : <Volume2 className="size-4" aria-hidden="true" />}
+            {isMuted ? (
+              <VolumeX className="size-4" aria-hidden="true" />
+            ) : (
+              <Volume2 className="size-4" aria-hidden="true" />
+            )}
           </Button>
         </div>
 
         <div className="flex items-center gap-2 text-right">
           <div className="hidden sm:block">
-            <span className="text-[10px] text-neutral-500 block font-mono">ESTADO DE PRUEBA</span>
-            <span className={`text-xs font-semibold ${isPlaying ? "text-emerald-400" : "text-amber-500"}`}>
+            <span className="text-[10px] text-neutral-500 block font-mono">
+              ESTADO DE PRUEBA
+            </span>
+            <span
+              className={`text-xs font-semibold ${isPlaying ? "text-emerald-400" : "text-amber-500"}`}
+            >
               {isPlaying ? "🎛️ PRUEBA ACTIVA (100 BPM)" : "💤 ESPERANDO INICIO"}
             </span>
           </div>
           {isPlaying && (
-            <div className="flex gap-0.5 items-end h-6 w-8 pb-1 px-1" aria-hidden="true">
+            <div
+              className="flex gap-0.5 items-end h-6 w-8 pb-1 px-1"
+              aria-hidden="true"
+            >
               {Array.from({ length: 5 }).map((_, i) => (
                 <span
                   key={i}
